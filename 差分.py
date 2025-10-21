@@ -1,17 +1,17 @@
-def one_difference(nums: list, operates: list) -> None: # 一维差分
+def one_difference(nums: list, operations: list) -> None: # 一维差分
     n = len(nums)
     dif = [0] * (n + 1)
-    for i, j, d in operates:
+    for i, j, d in operations:
         dif[i] += d
         dif[j + 1] -= d
     for i in range(n):
         dif[i + 1] += dif[i]
         nums[i] += dif[i]
 
-def two_difference(mat: list, operates: list) -> None: # 二维差分
+def two_difference(mat: list, operations: list) -> None: # 二维差分
     n, m = len(mat), len(mat[0])
     dif = [[0] * (m + 2) for _ in range(n + 2)]
-    for x1, y1, x2, y2, d in operates:
+    for x1, y1, x2, y2, d in operations:
         dif[x2 + 2][y2 + 2] += d
         dif[x1 + 1][y2 + 2] -= d
         dif[x2 + 2][y1 + 1] -= d
@@ -29,14 +29,14 @@ from collections import defaultdict
 
 class OneSparseDifference: # 一维稀疏差分
     def __init__(self, operations: List[List[int]]):
-        diff = defaultdict(int)
+        dif = defaultdict(int)
         for l, r, d in operations:
-            diff[l] += d
-            diff[r + 1] -= d
+            dif[l] += d
+            dif[r + 1] -= d
         self._positions = [-1]
         self._values = [0]
-        for pos in sorted(diff.keys()):
-            self._values.append(self._values[-1] + diff[pos])
+        for pos in sorted(dif.keys()):
+            self._values.append(self._values[-1] + dif[pos])
             self._positions.append(pos)
 
     def get(self, i: int) -> int:
@@ -58,22 +58,22 @@ class TwoSparseDifference: # 二维稀疏差分
         x_to_idx = {x: i for i, x in enumerate(self.xs)}
         y_to_idx = {y: i for i, y in enumerate(self.ys)}
         n, m = len(self.xs), len(self.ys)
-        diff = [[0] * (m + 2) for _ in range(n + 2)]
+        dif = [[0] * (m + 2) for _ in range(n + 2)]
         for op in operations:
             x1, y1, x2, y2, d = op
             i1 = x_to_idx[x1] + 1
             j1 = y_to_idx[y1] + 1
             i2 = x_to_idx[x2 + 1] + 1
             j2 = y_to_idx[y2 + 1] + 1
-            diff[i1][j1] += d
-            diff[i2][j1] -= d
-            diff[i1][j2] -= d
-            diff[i2][j2] += d
+            dif[i1][j1] += d
+            dif[i2][j1] -= d
+            dif[i1][j2] -= d
+            dif[i2][j2] += d
         self.g = [[0] * m for _ in range(n)]
         for i in range(1, n + 1):
             for j in range(1, m + 1):
-                diff[i][j] += diff[i - 1][j] + diff[i][j - 1] - diff[i - 1][j - 1]
-                self.g[i - 1][j - 1] = diff[i][j]
+                dif[i][j] += dif[i - 1][j] + dif[i][j - 1] - dif[i - 1][j - 1]
+                self.g[i - 1][j - 1] = dif[i][j]
 
     def get(self, x: int, y: int) -> int:
         i = bisect_right(self.xs, x) - 1
